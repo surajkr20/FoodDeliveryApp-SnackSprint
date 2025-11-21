@@ -77,3 +77,41 @@ How I can help next
 
 If you'd like, I can now: add a `.env.example` for the backend, or document existing backend routes. Which should I do next?
 
+**API — Authentication**
+
+The backend includes a minimal authentication API with signup, signin and signout routes. All routes are mounted under `/api/auth`.
+
+- `POST /api/auth/signup`
+	- Description: Register a new user.
+	- Body (JSON): `{ fullname, email, password, mobile, role }` — `role` must be one of `user`, `owner`, or `deliveryboy`.
+	- Success: `201` and the created user object. The server sets an HTTP-only cookie named `token` (valid 7 days).
+	- Errors: `400` for validation (existing user, short password, short mobile) or `500` for server errors.
+
+- `POST /api/auth/signin`
+	- Description: Authenticate user and create session cookie.
+	- Body (JSON): `{ email, password }`.
+	- Success: `200` and the user object. Sets the same HTTP-only `token` cookie used for auth.
+	- Errors: `400` for invalid credentials or missing user, `500` for server errors.
+
+- `POST /api/auth/signout`
+	- Description: Clear authentication cookie and sign out.
+	- Success: `200` with `{ message: "sign out successfully" }`.
+
+Notes and implementation details:
+- The cookie name is `token`, `httpOnly: true`, `sameSite: "strict"`, and a `maxAge` of 7 days. For development the server sets `secure: false`.
+- The backend currently allows CORS from `http://localhost:5173` and passes `credentials: true`, so frontend requests must include credentials to send/receive cookies (e.g. `fetch` with `credentials: 'include'`).
+- User schema fields: `fullname` (string), `email` (string, unique), `password` (hashed string), `mobile` (string), `role` (`user|owner|deliveryboy`).
+
+Example fetch (frontend) — signin:
+
+```js
+await fetch(`${import.meta.env.VITE_API_URL}/api/auth/signin`, {
+	method: 'POST',
+	headers: { 'Content-Type': 'application/json' },
+	credentials: 'include',
+	body: JSON.stringify({ email, password })
+});
+```
+
+If you want, I can also add: a `.env.example`, a short Postman collection, or automated docs (Swagger) for these endpoints. Which would help most right now?
+
