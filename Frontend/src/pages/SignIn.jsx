@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { FaRegEye } from "react-icons/fa";
 import { FaRegEyeSlash } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const SignIn = () => {
@@ -14,6 +14,7 @@ const SignIn = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
+  const nevigate = useNavigate();
 
   const serverUrl = "http://localhost:3000";
   const handleSignIn = async () => {
@@ -97,7 +98,9 @@ const SignIn = () => {
           </div>
         </div>
 
-        <div className={`text-right font-medium text-[#ff4d2d] mb-2 cursor-pointer`}>
+        <div className={`text-right font-medium text-[#ff4d2d] mb-2 cursor-pointer`}
+          onClick={()=>nevigate("/forget-password")}
+        >
           Forget password
         </div>
 
