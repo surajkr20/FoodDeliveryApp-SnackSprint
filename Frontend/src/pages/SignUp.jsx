@@ -4,6 +4,7 @@ import { FaRegEyeSlash } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import { serverUrl } from "../App";
 
 const SignUp = () => {
   const primaryColor = "#ff4d2d";
@@ -19,7 +20,6 @@ const SignUp = () => {
   const [email, setEmail] = useState("");
   const [mobile, setMobile] = useState("");
 
-  const serverUrl = "http://localhost:3000";
   const handleSignup = async () => {
     try {
       const result = await axios.post(

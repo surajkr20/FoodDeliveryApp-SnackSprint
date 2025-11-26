@@ -4,6 +4,7 @@ import { FaRegEyeSlash } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { serverUrl } from "../App";
 
 const SignIn = () => {
   const primaryColor = "#ff4d2d";
@@ -16,7 +17,6 @@ const SignIn = () => {
   const [email, setEmail] = useState("");
   const nevigate = useNavigate();
 
-  const serverUrl = "http://localhost:3000";
   const handleSignIn = async () => {
     try {
       const result = await axios.post(

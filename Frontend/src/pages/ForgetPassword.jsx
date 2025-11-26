@@ -7,6 +7,8 @@ import { CiLock } from "react-icons/ci";
 import { FaRegEye } from "react-icons/fa";
 import { FaRegEyeSlash } from "react-icons/fa";
 import { FaRegArrowAltCircleRight } from "react-icons/fa";
+import {serverUrl} from "../App";
+import axios from "axios";
 
 const ForgetPassword = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -16,6 +18,46 @@ const ForgetPassword = () => {
   const [otp, setOtp] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+
+  const handleSendOtp = async () =>{
+    try {
+      const result = await axios.post(`${serverUrl}/api/auth/send-otp`, {email},{
+        withCredentials: true
+      })
+      setStep(2);
+      console.log(result)
+    } catch (error) {
+      console.log("handleSendOtp error : ", error)
+    }
+  }
+
+  const handleVerifyOtp = async () =>{
+    try {
+      const result = await axios.post(`${serverUrl}/api/auth/verify-otp`, {email, otp},{
+        withCredentials: true
+      })
+      setStep(3);
+      console.log(result)
+    } catch (error) {
+      console.log("handleSendOtp error : ", error)
+    }
+  }
+
+  const handleResetPassword = async () =>{
+    if(newPassword != confirmPassword) {
+      console.log("your new password and confirm password are not matched");
+      return null;
+    }
+    try {
+      const result = await axios.post(`${serverUrl}/api/auth/reset-password`, {email, newPassword},{
+        withCredentials: true
+      })
+      navigate('/signin');
+      console.log(result)
+    } catch (error) {
+      console.log("handleSendOtp error : ", error)
+    }
+  }
 
   return (
     <div className="w-full min-h-screen flex items-center justify-center p-4 bg-[#fff9f6]">
@@ -65,7 +107,7 @@ const ForgetPassword = () => {
             {/* reset password button */}
             <button
               className={`mb-4 w-full rounded-md py-1.5 bg-[#e64323] text-white font-medium cursor-pointer`}
-              onClick={() => setStep(step + 1)}
+              onClick={handleSendOtp}
             >
               Send OTP
             </button>
@@ -95,7 +137,7 @@ const ForgetPassword = () => {
             {/* reset password button */}
             <button
               className={`mb-4 w-full rounded-md py-1.5 bg-[#e64323] text-white font-medium cursor-pointer`}
-              onClick={() => setStep(step + 1)}
+              onClick={handleVerifyOtp}
             >
               verify
             </button>
@@ -157,6 +199,7 @@ const ForgetPassword = () => {
             {/* reset password button */}
             <button
               className={`mb-4 w-full rounded-md py-1.5 bg-[#e64323] text-white font-medium cursor-pointer`}
+              onClick={handleResetPassword}
             >
               Reset password
             </button>
@@ -166,7 +209,13 @@ const ForgetPassword = () => {
         {/* back to login */}
         <div
           className="flex items-center justify-between"
-          onClick={() => setStep(step - 1)}
+          onClick={() => {
+            if(step <= 1){
+              setStep(1);
+            }else{
+              setStep(step - 1);
+            }
+          }}
         >
           <div className="flex items-center justify-center gap-2 cursor-pointer">
             <GoArrowLeft />
