@@ -6,6 +6,7 @@ import UserModel from "./models/user.model.js";
 import cookieParser from "cookie-parser";
 import authRouter from "./routes/auth.routes.js";
 import cors from "cors";
+import userRouter from "./routes/user.routes.js";
 const app = express();
 const port = process.env.PORT || 8000;
 
@@ -19,6 +20,7 @@ app.use(
 );
 
 app.use("/api/auth", authRouter);
+app.use("/api/user", userRouter);
 
 app.listen(port, () => {
   dbConnect();
