@@ -5,8 +5,9 @@ import { FcGoogle } from "react-icons/fc";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { serverUrl } from "../App";
-import { GoogleAuthProvider, signInWithPopup } from "firebase/auth"
-import { auth } from "../../firebase.js"
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { auth } from "../../firebase.js";
+import { ClipLoader } from "react-spinners";
 
 const SignUp = () => {
   const primaryColor = "#ff4d2d";
@@ -23,7 +24,10 @@ const SignUp = () => {
   const [email, setEmail] = useState("");
   const [mobile, setMobile] = useState("");
 
+  const [loading, setLoading] = useState(false);
+
   const handleSignup = async () => {
+    setLoading(true)
     try {
       const result = await axios.post(
         `${serverUrl}/api/auth/signup`,
@@ -34,6 +38,7 @@ const SignUp = () => {
       );
       console.log("result data from signup: ", result);
       setErr("");
+      setLoading(false);
       // reset input fields
       setFullname("");
       setEmail("");
@@ -46,27 +51,33 @@ const SignUp = () => {
     }
   };
 
-  const handleGoogleAuth = async () =>{
-    if(!mobile){
-      return setErr("mobile number is required!")
+  const handleGoogleAuth = async () => {
+    setLoading(true);
+    if (!mobile) {
+      return setErr("mobile number is required!");
     }
     const provider = new GoogleAuthProvider();
     const result = await signInWithPopup(auth, provider);
-    console.log(result)
+    console.log(result);
     try {
-      const data = await axios.post(`${serverUrl}/api/auth/google-auth`, {
-        fullname: result.user.displayName,
-        email: result.user.email,
-        role,
-        mobile
-      }, {withCredentials: true})
-      console.log(data)
+      const data = await axios.post(
+        `${serverUrl}/api/auth/google-auth`,
+        {
+          fullname: result.user.displayName,
+          email: result.user.email,
+          role,
+          mobile,
+        },
+        { withCredentials: true }
+      );
+      console.log(data);
+      setLoading(false);
       setErr("");
     } catch (error) {
-      console.log("google auth error: ", error)
+      console.log("google auth error: ", error);
       setErr(error.response.data.message);
     }
-  }
+  };
 
   return (
     <div
@@ -132,7 +143,7 @@ const SignUp = () => {
             Mobile Number
           </label>
           <input
-            type="text" 
+            type="text"
             value={mobile}
             required
             className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:border-orange-500"
@@ -194,21 +205,21 @@ const SignUp = () => {
         </div>
 
         <p className="text-gray-600 mt-2 mb-2 text-right text-[15px]">
-          {err? err : ""}
+          {err ? err : ""}
         </p>
 
         {/* signup button */}
-        <button
+        <button disabled={loading}
           className={`mb-4 w-full rounded-md py-1.5 hover:bg-[#e64323] bg-[#ff4d2d] text-white font-medium cursor-pointer`}
-          onClick={()=>{
-            if(fullname && email && password && role && mobile){
-              handleSignup()
-            }else{
-              setErr("all fields are required!")
+          onClick={() => {
+            if (fullname && email && password && role && mobile) {
+              handleSignup();
+            } else {
+              setErr("all fields are required!");
             }
           }}
         >
-          Sign Up
+          {loading? <ClipLoader size={20} color="white"/> : "Signup"}
         </button>
 
         {/* signup with google button */}

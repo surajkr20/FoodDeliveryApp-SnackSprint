@@ -9,6 +9,7 @@ import { FaRegEyeSlash } from "react-icons/fa";
 import { FaRegArrowAltCircleRight } from "react-icons/fa";
 import { serverUrl } from "../App";
 import axios from "axios";
+import {ClipLoader} from "react-spinners"
 
 const ForgetPassword = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -19,8 +20,10 @@ const ForgetPassword = () => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [err, setErr] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSendOtp = async () => {
+    setLoading(true)
     try {
       const result = await axios.post(
         `${serverUrl}/api/auth/send-otp`,
@@ -31,6 +34,7 @@ const ForgetPassword = () => {
       );
       setStep(2);
       console.log(result);
+      setLoading(false);
       setErr("");
     } catch (error) {
       console.log("handleSendOtp error : ", error);
@@ -39,6 +43,7 @@ const ForgetPassword = () => {
   };
 
   const handleVerifyOtp = async () => {
+    setLoading(true)
     try {
       const result = await axios.post(
         `${serverUrl}/api/auth/verify-otp`,
@@ -49,6 +54,7 @@ const ForgetPassword = () => {
       );
       setStep(3);
       console.log(result);
+      setLoading(false)
       setErr("");
     } catch (error) {
       console.log("handleSendOtp error : ", error);
@@ -57,6 +63,7 @@ const ForgetPassword = () => {
   };
 
   const handleResetPassword = async () => {
+    setLoading(true);
     if (newPassword != confirmPassword) {
       setErr("password miss matched!")
       return null;
@@ -71,6 +78,7 @@ const ForgetPassword = () => {
       );
       navigate("/signin");
       console.log(result);
+      setLoading(false);
       setErr("");
     } catch (error) {
       console.log("handleSendOtp error : ", error);
@@ -128,7 +136,7 @@ const ForgetPassword = () => {
             </p>
 
             {/* reset password button */}
-            <button
+            <button disabled={loading}
               className={`mb-4 w-full rounded-md py-1.5 bg-[#e64323] text-white font-medium cursor-pointer`}
               onClick={() => {
                 if (email) {
@@ -138,7 +146,7 @@ const ForgetPassword = () => {
                 }
               }}
             >
-              Send OTP
+              {loading ? <ClipLoader size={20} color="white"/> : "Send OTP"}
             </button>
           </div>
         )}
@@ -168,7 +176,7 @@ const ForgetPassword = () => {
             </p>
 
             {/* reset password button */}
-            <button
+            <button disabled={loading}
               className={`mb-4 w-full rounded-md py-1.5 bg-[#e64323] text-white font-medium cursor-pointer`}
               onClick={() => {
                 if (otp) {
@@ -178,7 +186,7 @@ const ForgetPassword = () => {
                 }
               }}
             >
-              verify
+              {loading ? <ClipLoader size={20} color="white"/> : "verify otp"}
             </button>
           </div>
         )}
@@ -240,7 +248,7 @@ const ForgetPassword = () => {
             </p>
 
             {/* reset password button */}
-            <button
+            <button disabled={loading}
               className={`mb-4 w-full rounded-md py-1.5 bg-[#e64323] text-white font-medium cursor-pointer`}
               onClick={()=>{
                 if(newPassword && confirmPassword){
@@ -250,7 +258,7 @@ const ForgetPassword = () => {
                 }
               }}
             >
-              Reset password
+              {loading ? <ClipLoader size={20} color="white"/> : "Reset password"}
             </button>
           </div>
         )}

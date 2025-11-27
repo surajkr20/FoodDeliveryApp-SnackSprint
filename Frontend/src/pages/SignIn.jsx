@@ -7,6 +7,7 @@ import axios from "axios";
 import { serverUrl } from "../App";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { auth } from "../../firebase";
+import { ClipLoader } from "react-spinners";
 
 const SignIn = () => {
   const primaryColor = "#ff4d2d";
@@ -19,8 +20,10 @@ const SignIn = () => {
   const [email, setEmail] = useState("");
   const [err, setErr] = useState("");
   const nevigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   const handleSignIn = async () => {
+    setLoading(true);
     try {
       const result = await axios.post(
         `${serverUrl}/api/auth/signin`,
@@ -29,6 +32,7 @@ const SignIn = () => {
           withCredentials: true,
         }
       );
+      setLoading(false);
       console.log("result data from signin: ", result);
       setErr("");
       // reset input fields
@@ -138,7 +142,7 @@ const SignIn = () => {
           </div>
         </div>
 
-        <button
+        <button disabled = {loading}
           className={`mb-4 w-full rounded-md py-1.5 hover:bg-[#e64323] bg-[#ff4d2d] text-white font-medium cursor-pointer`}
           onClick={()=>{
             if(email && password){
@@ -148,7 +152,7 @@ const SignIn = () => {
             }
           }}
         >
-          Sign in
+          {loading? <ClipLoader size={20} color="white"/> : "signIn"}
         </button>
 
         <button
