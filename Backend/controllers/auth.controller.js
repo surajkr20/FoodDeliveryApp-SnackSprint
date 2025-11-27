@@ -7,7 +7,8 @@ export const signup = async (req, res) => {
   try {
     const { fullname, email, password, mobile, role } = req.body;
     const userExist = await UserModel.findOne({ email });
-    if (userExist) return res.status(400).json({ message: "user already exists!" });
+    if (userExist)
+      return res.status(400).json({ message: "user already exists!" });
     if (password.length < 6)
       return res
         .status(400)
@@ -43,12 +44,10 @@ export const signin = async (req, res) => {
     const { email, password } = req.body;
     const user = await UserModel.findOne({ email });
     if (!user)
-      return res
-        .status(400)
-        .json({
-          message:
-            "user with this email does not exist in our database, please register!",
-        });
+      return res.status(400).json({
+        message:
+          "user with this email not exist, please register!",
+      });
     const matchedPassword = await bcrypt.compare(password, user.password);
     if (!matchedPassword)
       return res.status(400).json({ message: "invalid email or password" });
@@ -74,50 +73,83 @@ export const signout = async (req, res) => {
   }
 };
 
-export const SendOtp = async (req, res) =>{
+export const SendOtp = async (req, res) => {
   try {
-    const {email} = req.body;
-    const userExist = await UserModel.findOne({email});
-    if(!userExist) return res.status(400).json({message: "user is not exist, please enter your valid Email"});
+    const { email } = req.body;
+    const userExist = await UserModel.findOne({ email });
+    if (!userExist)
+      return res
+        .status(400)
+        .json({ message: "user is not exist, please enter your valid Email" });
     const otp = Math.floor(1000 + Math.random() * 9000).toString();
     userExist.resetOtp = otp;
     userExist.otpExpires = Date.now() + 5 * 60 * 1000;
     userExist.isOtpVerified = false;
     await userExist.save();
     await SendOtpMail(email, otp);
-    return res.status(200).json({message: "otp sent successfully"})
+    return res.status(200).json({ message: "otp sent successfully" });
   } catch (error) {
-    return res.status(500).json({message: `otp send error ${error}`})
+    return res.status(500).json({ message: `otp send error ${error}` });
   }
-}
+};
 
-export const verifyOtp = async (req, res) =>{
+export const verifyOtp = async (req, res) => {
   try {
-    const {email, otp} = req.body;
-    const currentUser = await UserModel.findOne({email});
-    if(!currentUser || currentUser.resetOtp != otp || currentUser.otpExpires < Date.now()) 
-      return res.status(400).json({message: "Invalid or Expired Otp"})
+    const { email, otp } = req.body;
+    const currentUser = await UserModel.findOne({ email });
+    if (
+      !currentUser ||
+      currentUser.resetOtp != otp ||
+      currentUser.otpExpires < Date.now()
+    )
+      return res.status(400).json({ message: "Invalid or Expired Otp" });
     currentUser.resetOtp = undefined;
     currentUser.isOtpVerified = true;
     await currentUser.save();
-    return res.status(200).json({message: "otp verified successfully"})
+    return res.status(200).json({ message: "otp verified successfully" });
   } catch (error) {
-    return res.status(500).json({message: `otp verify error ${error}`})
+    return res.status(500).json({ message: `otp verify error ${error}` });
   }
-}
+};
 
-export const resetPassword = async (req, res) =>{
+export const resetPassword = async (req, res) => {
   try {
-    const {email, newPassword} = req.body;
-    const user = await UserModel.findOne({email});
-    if(!user || !user.isOtpVerified) return res.status(400).json({message: "otp verification required"});
-    if(newPassword.length < 6) return res.status(400).json({message: "password must be atleast 6 characters"});
+    const { email, newPassword } = req.body;
+    const user = await UserModel.findOne({ email });
+    if (!user || !user.isOtpVerified)
+      return res.status(400).json({ message: "otp verification required" });
+    if (newPassword.length < 6)
+      return res
+        .status(400)
+        .json({ message: "password must be atleast 6 characters" });
     const hashedpassword = await bcrypt.hash(newPassword, 10);
     user.password = hashedpassword;
     user.isOtpVerified = false;
     await user.save();
-    return res.status(200).json({message: "your password changed successfully"})
+    return res
+      .status(200)
+      .json({ message: "your password changed successfully" });
   } catch (error) {
-    return res.status(500).json({message: `reset password error ${error}`})
+    return res.status(500).json({ message: `reset password error ${error}` });
   }
-}
+};
+
+export const googleAuth = async (req, res) => {
+  try {
+    const { fullname, email, role, mobile } = req.body;
+    let user = await UserModel.findOne({ email });
+    if (!user) {
+      user = await UserModel.create({ fullname, email, role, mobile });
+    }
+    const token = await tokenGenerate(user._id);
+    res.cookie("token", token, {
+      secure: false,
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      httpOnly: true,
+    });
+    return res.status(200).json(user);
+  } catch (error) {
+    return res.status(500).json({message: `google auth error ${error}`})
+  }
+};

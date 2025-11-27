@@ -5,6 +5,8 @@ import { FcGoogle } from "react-icons/fc";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { serverUrl } from "../App";
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { auth } from "../../firebase";
 
 const SignIn = () => {
   const primaryColor = "#ff4d2d";
@@ -15,6 +17,7 @@ const SignIn = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
+  const [err, setErr] = useState("");
   const nevigate = useNavigate();
 
   const handleSignIn = async () => {
@@ -27,11 +30,33 @@ const SignIn = () => {
         }
       );
       console.log("result data from signin: ", result);
+      setErr("");
       // reset input fields
       setEmail("");
       setPassword("");
     } catch (error) {
+      setErr(error.response.data.message);
       console.log("signup error from fetching signup api", error);
+    }
+  };
+
+  const handleGoogleAuth = async () => {
+    const provider = new GoogleAuthProvider();
+    const result = await signInWithPopup(auth, provider);
+    console.log("result", result);
+    try {
+      const data = await axios.post(
+        `${serverUrl}/api/auth/google-auth`,
+        { email: result.user.email },
+        {
+          withCredentials: true,
+        }
+      );
+      console.log("data", data);
+      setErr("");
+    } catch (error) {
+      console.log("sign-in with google error: ", error);
+      setErr(error.response.data.message);
     }
   };
 
@@ -64,8 +89,8 @@ const SignIn = () => {
           </label>
           <input
             type="text"
-            required
             value={email}
+            required
             className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:border-orange-500"
             placeholder="Enter your email"
             onChange={(e) => setEmail(e.target.value)}
@@ -83,8 +108,8 @@ const SignIn = () => {
           <div className="relative">
             <input
               type={showPassword ? "text" : "password"}
-              required
               value={password}
+              required
               className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:border-orange-500"
               placeholder="Enter your password"
               onChange={(e) => setPassword(e.target.value)}
@@ -98,15 +123,30 @@ const SignIn = () => {
           </div>
         </div>
 
-        <div className={`text-right font-medium text-[#ff4d2d] mb-2 cursor-pointer`}
-          onClick={()=>nevigate("/forget-password")}
-        >
-          Forget password
+        <div className="flex items-center justify-between">
+          <div
+            className={`text-left font-medium text-[12px] text-[#391610] mb-2 cursor-pointer`}
+            onClick={() => nevigate("/forget-password")}
+          >
+            {err? err : ""}
+          </div>
+          <div
+            className={`text-right font-medium text-[#ff4d2d] mb-2 cursor-pointer`}
+            onClick={() => nevigate("/forget-password")}
+          >
+            Forget password
+          </div>
         </div>
 
         <button
           className={`mb-4 w-full rounded-md py-1.5 hover:bg-[#e64323] bg-[#ff4d2d] text-white font-medium cursor-pointer`}
-          onClick={handleSignIn}
+          onClick={()=>{
+            if(email && password){
+              handleSignIn();
+            }else{
+              setErr("All fields are required!")
+            }
+          }}
         >
           Sign in
         </button>
@@ -114,6 +154,7 @@ const SignIn = () => {
         <button
           className={`mt-2 w-full rounded-md cursor-pointer flex items-center justify-center gap-2 border 
             py-1.5 border-gray-300 shadow transition duration-200 hover:bg-gray-200 font-serif`}
+          onClick={handleGoogleAuth}
         >
           <FcGoogle size={18} />
           <span>Sign In with google</span>
