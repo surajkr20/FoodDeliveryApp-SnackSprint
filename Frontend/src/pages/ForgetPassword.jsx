@@ -39,6 +39,7 @@ const ForgetPassword = () => {
     } catch (error) {
       console.log("handleSendOtp error : ", error);
       setErr(error.response.data.message);
+      setLoading(false);
     }
   };
 
@@ -59,6 +60,7 @@ const ForgetPassword = () => {
     } catch (error) {
       console.log("handleSendOtp error : ", error);
       setErr(error.response.data.message);
+      setLoading(false);
     }
   };
 
@@ -83,6 +85,7 @@ const ForgetPassword = () => {
     } catch (error) {
       console.log("handleSendOtp error : ", error);
       setErr(error.response.data.message);
+      setLoading(false);
     }
   };
 

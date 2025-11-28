@@ -8,6 +8,8 @@ import { serverUrl } from "../App";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { auth } from "../../firebase.js";
 import { ClipLoader } from "react-spinners";
+import { useDispatch } from "react-redux";
+import { setUserData } from "../redux/userSlice.js";
 
 const SignUp = () => {
   const primaryColor = "#ff4d2d";
@@ -25,6 +27,7 @@ const SignUp = () => {
   const [mobile, setMobile] = useState("");
 
   const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
 
   const handleSignup = async () => {
     setLoading(true)
@@ -36,7 +39,7 @@ const SignUp = () => {
           withCredentials: true,
         }
       );
-      console.log("result data from signup: ", result);
+      dispatch(setUserData(result.data))
       setErr("");
       setLoading(false);
       // reset input fields
@@ -48,6 +51,7 @@ const SignUp = () => {
     } catch (error) {
       console.log("signup error from fetching signup api", error);
       setErr(error.response.data.message);
+      setLoading(false)
     }
   };
 
@@ -58,9 +62,8 @@ const SignUp = () => {
     }
     const provider = new GoogleAuthProvider();
     const result = await signInWithPopup(auth, provider);
-    console.log(result);
     try {
-      const data = await axios.post(
+      const {data} = await axios.post(
         `${serverUrl}/api/auth/google-auth`,
         {
           fullname: result.user.displayName,
@@ -70,12 +73,13 @@ const SignUp = () => {
         },
         { withCredentials: true }
       );
-      console.log(data);
+      dispatch(setUserData(data))
       setLoading(false);
       setErr("");
     } catch (error) {
       console.log("google auth error: ", error);
       setErr(error.response.data.message);
+      setLoading(false);
     }
   };
 
