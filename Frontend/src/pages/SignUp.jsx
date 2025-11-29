@@ -121,6 +121,7 @@ const SignUp = () => {
             }}
           />
         </div>
+
         {/* Email */}
         <div className="mb-4">
           <label
@@ -138,6 +139,7 @@ const SignUp = () => {
             onChange={(e) => setEmail(e.target.value)}
           />
         </div>
+
         {/* Mobile */}
         <div className="mb-4">
           <label
@@ -190,11 +192,12 @@ const SignUp = () => {
           >
             Role
           </label>
-          <div className="flex items-center justify-between gap-4 w-full">
+
+          <div className="flex items-center justify-between w-full">
             {["user", "owner", "deliveryboy"].map((r) => (
               <button
                 key={r}
-                className="px-7 border rounded-md py-1.5 cursor-pointer text-center font-medium transition-colors"
+                className="border rounded-md px-4 md:px-8 py-1.5 cursor-pointer text-center font-medium transition-colors"
                 onClick={() => setRole(r)}
                 style={
                   role == r

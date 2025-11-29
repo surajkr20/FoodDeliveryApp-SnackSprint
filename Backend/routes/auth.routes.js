@@ -5,7 +5,7 @@ import {signup, signin, signout, SendOtp, verifyOtp, resetPassword, googleAuth} 
 
 authRouter.post('/signup', signup);
 authRouter.post('/signin', signin);
-authRouter.post('/signout', signout);
+authRouter.get('/signout', signout);
 authRouter.post('/send-otp', SendOtp);
 authRouter.post('/verify-otp', verifyOtp);
 authRouter.post('/reset-password', resetPassword);

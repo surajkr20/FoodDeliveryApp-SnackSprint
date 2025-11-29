@@ -6,17 +6,18 @@ import ForgetPassword from "./pages/ForgetPassword";
 import Home from "./pages/Home";
 import useGetCurrentUser from "./hooks/useGetCurrentUser";
 import { useSelector } from "react-redux";
+import useGetCity from "./hooks/useGetCity";
 
 export const serverUrl = "http://localhost:3000";
 
 const App = () => {
   useGetCurrentUser();
-  const { userData} = useSelector(state=>state.user);
-  console.log("athenticated users: ", userData)
+  useGetCity();
+  const { userData, city} = useSelector(state=>state.user);
   return (
     <div>
       <Routes>
-        <Route path="/" element={userData ? <Home /> : <Navigate to={'/'}/>} />
+        <Route path="/" element={userData ? <Home /> : <Navigate to={'/signin'}/>} />
         <Route path="/signup" element={!userData ? <SignUp />: <Navigate to={'/'}/>} />
         <Route path="/signin" element={!userData ? <SignIn />: <Navigate to={'/'}/>} />
         <Route path="/forget-password" element={!userData ? <ForgetPassword />: <Navigate to={'/'}/>} />
