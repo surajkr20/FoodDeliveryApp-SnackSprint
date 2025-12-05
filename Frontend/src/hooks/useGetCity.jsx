@@ -14,7 +14,7 @@ function useGetCity() {
       const result = await axios.get(
         `https://api.geoapify.com/v1/geocode/reverse?lat=${lattitude}&lon=${longitude}&format=json&apiKey=${apiKey}`
       );
-      console.log(result)
+      // console.log(result)
       dispatch(setCity(result?.data?.results[0].state_district));
       dispatch(setCountry(result?.data?.results[0].country));
     });
