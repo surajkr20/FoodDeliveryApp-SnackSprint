@@ -11,7 +11,7 @@ const ShopSchema = new mongoose.Schema({
     },
     owner: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "UserModel",
+        ref: "user",
         required: true
     },
     city: {
@@ -26,13 +26,9 @@ const ShopSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    pincode: {
-        type: Number,
-        required: true
-    },
     items: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: "ItemsModel"
+        ref: "items"
     }]
 }, {timestamps: true})
 
