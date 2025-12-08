@@ -197,6 +197,49 @@ Notes and recommendations:
 - `App.jsx` currently exports `serverUrl = "http://localhost:3000"`; for consistency consider moving to `import.meta.env.VITE_API_URL` and a `Frontend/.env` file.
 - Make sure `ownerSlice` is included in the store (`store.js`) so `useGetMyShop` can dispatch successfully.
 
+Create / Edit Shop page & location hook
+
+This project includes a dedicated owner page to create or edit the restaurant (shop) and a location hook that pre-fills city/state/address from the browser's geolocation. These features improve onboarding speed for owners and demonstrate practical UX for merchant flows.
+
+Key frontend files
+- `Frontend/src/pages/CreateEditShop.jsx` — Page with a form (Shop Name, City, State, Address, Image). Features:
+  - Pre-fills City/State/Address using global user state populated by `useGetCity`.
+  - Image preview on the client using `URL.createObjectURL` before upload.
+  - Submits as `FormData` to `POST /api/shop/create-edit` with `withCredentials: true`.
+  - Shows a loader state on submit (uses `ClipLoader`).
+  - On success dispatches `setShopData(result.data)` to update Redux and clears the form.
+
+- `Frontend/src/hooks/useGetCity.jsx` — Geolocation hook that:
+  - Uses `navigator.geolocation.getCurrentPosition` to retrieve latitude/longitude.
+  - Calls an external reverse-geocoding API (Geoapify) using `VITE_GEOLOCATION_APIKEY` to resolve `city`, `state`, `country`, and `address_line2`.
+  - Dispatches those values to the Redux `user` slice: `setCity`, `setState`, `setCountry`, `setCurrentAddress`.
+
+- `Frontend/src/redux/userSlice.js` — Holds global user-related fields used across the app:
+  - `userData` (current user object)
+  - `city`, `country`, `state`, `currentAddress` (populated by `useGetCity`)
+
+How these pieces work together
+1. On app mount `App.jsx` calls `useGetCity()` and `useGetMyShop()` (and `useGetCurrentUser()`).
+2. `useGetCity` sets `city`, `state`, `country` and `currentAddress` in the `user` slice so pages like `CreateEditShop` can pre-fill inputs.
+3. Owner opens `CreateEditShop` — the form loads values from `shopData` (if editing) or from the `user` slice for location fields.
+4. Owner can choose an image file; the page shows a client-side preview. When submitting, the page builds `FormData`, attaches the image if present, and posts to `POST /api/shop/create-edit`.
+5. Backend handles image upload (multer + Cloudinary), creates/updates the shop, and returns the shop object which the frontend stores in the `owner` slice via `setShopData`.
+
+Route & UX notes
+- `App.jsx` exposes the route `/create-edit-shop` which is guarded by redirect logic (`Navigate`) when the user is not authenticated.
+- The `CreateEditShop` page uses `loading` state to give the owner clear feedback during network operations; this is important for recruiter-facing demos showing polished UX.
+
+Security & privacy notes
+- Geolocation is requested from the user's browser; ensure you present a clear reason in the UI why location is needed and fallback gracefully if the user denies permission.
+
+What I added to the README
+- A professional section describing the `CreateEditShop` page, the `useGetCity` geolocation hook, the `user` Redux fields, and the end-to-end flow for owners creating/updating a shop.
+
+Next steps I can take
+- Replace hard-coded `serverUrl` with `import.meta.env.VITE_API_URL` and add `Frontend/.env.example`.
+- Add a small owner dashboard view that lists items and shows quick links to add/edit items.
+- Add client-side validation and friendly messages for geolocation permission denial.
+
 
 Example FormData request for creating an item:
 
