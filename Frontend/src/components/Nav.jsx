@@ -10,12 +10,14 @@ import { setUserData } from "../redux/userSlice";
 import { FiPlusCircle } from "react-icons/fi";
 import { BsCartPlus } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
+import { ClipLoader } from "react-spinners";
 
 const Nav = () => {
   const { userData, city, country } = useSelector((state) => state.user);
   const { shopData } = useSelector((state)=>state.owner);
   const [showInfo, setShowInfo] = useState(false);
   const [showSearchInput, setShowSearchInput] = useState(false);
+  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch(); 
   const navigate = useNavigate();
 
@@ -34,7 +36,7 @@ const Nav = () => {
   switch (userData.role) {
     case "user":
       return (
-        <div className="w-full h-20 flex items-center justify-between md:justify-center gap-[30px] px-5 fixed top-0 z-9999 bg-[#fff9f6] overflow-visible">
+        <div className="w-full h-20 flex items-center justify-between md:justify-center gap-[30px] px-5 fixed top-0 z-9999 bg-[#fff9f6]">
           <h1 className="md:text-3xl text-2xl font-bold mb-2 text-[#ff4d2d]">
             SnackSprint
           </h1>
@@ -154,7 +156,7 @@ const Nav = () => {
 
     case "owner":
       return (
-        <div className="w-full h-20 flex items-center justify-between md:justify-evenly gap-[30px] px-5 bg-[#fff9f6] overflow-visible">
+        <div className="w-full fixed top-0 left-0 z-9999 h-20 flex items-center justify-between bg-[#fff9f6] shadow-md md:px-14 lg:px-32 xl:px-48 px-5">
           <h1 className="md:text-3xl text-2xl font-bold mb-2 text-[#ff4d2d]">
             SnackSprint
           </h1>
@@ -169,19 +171,10 @@ const Nav = () => {
                className="rounded-full md:rounded-xl bg-[#ff4d2d]/10 text-[#ff4d2d] items-center justify-between md:px-3 md:py-1 p-2 flex gap-1 font-medium cursor-pointer">
               <FiPlusCircle size={20} />
               <span className="hidden md:block">
-                Add Food Items
+                {loading ? <ClipLoader size={35} color="white"/> : "Add Food Items"}
               </span>
               </button>
             )}
-
-            {/* My order button */}
-            <button className="relative md:px-3 md:py-1 p-2 md:rounded-lg bg-[#ff4d2d]/10 text-[#ff4d2d] text-sm font-medium cursor-pointer rounded-full">
-              <div className="flex items-center gap-1">
-                <BsCartPlus size={20}/>
-                <span className="md:block hidden">My Orders</span>
-              </div>
-              <span className=" absolute right-[-9px] -top-3 text-gray-500 text-lg">0</span>
-            </button>
 
             {/* Profile */}
             <div
@@ -196,7 +189,7 @@ const Nav = () => {
 
             {/* Profile popup */}
             {showInfo == true && (
-              <div className="fixed w-[200px] md:w-auto top-20 right-4 md:right-[10%] lg:right-[18%] bg-white shadow-2xl rounded-xl px-4 py-4 flex flex-col items-start z-9999 gap-2">
+              <div className="fixed w-[200px] md:w-auto top-18 right-4 md:right-[6%] lg:right-[13%] bg-white shadow-2xl rounded-xl px-4 py-4 flex flex-col items-start z-9999 gap-2">
                 <div className="flex flex-col gap-1">
                   <span className="text-[14px] text-gray-800 font-semibold truncate">
                     {userData.fullname} | {userData.role.toUpperCase()}
@@ -210,9 +203,6 @@ const Nav = () => {
                 </div>
 
                 <div className="flex flex-col gap-1 w-full">
-                  <button className="text-[#993a29] text-[14px] font-semibold md:hidden cursor-pointer bg-[#ff4d2d]/20 p-1 rounded-md w-full">
-                    My Orders
-                  </button>
                   <button
                     className="text-[#993a29] text-[14px] font-semibold cursor-pointer bg-[#ff4d2d]/20 p-1 rounded-md w-full"
                     onClick={handleSignOut}

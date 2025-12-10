@@ -11,7 +11,7 @@ const ShowFoodItems = ({ data }) => {
 
   return (
     <div
-      className={`md:w-[450px] w-full bg-white rounded-xl shadow-2xl p-3.5 flex items-center gap-4`}
+      className="w-full bg-white rounded-xl shadow-2xl p-3.5 border border-[#fff9f6] flex flex-col gap-3"
       style={{ border: `1px solid bg-[#fff9f6]` }}
     >
       {/* restaurant banner image */}
@@ -27,14 +27,14 @@ const ShowFoodItems = ({ data }) => {
 
       {/* food details */}
       <div className="w-full flex flex-col items-start font-serif relative">
-        <div className="flex flex-col items-center absolute right-1 top-2 gap-2.5">
+        <div className="flex flex-col items-center absolute right-0 top-4.5 gap-2">
           <MdEdit
-            size={30}
+            size={25}
             className="bg-green-600 rounded-full p-1 text-white cursor-pointer hover:scale-105 transition-all duration-300"
             onClick={() => navigate(`/edit-shop-items/${data._id}`)}
           />
           <MdDelete
-            size={30}
+            size={25}
             className="bg-[#ff4d2d] rounded-full p-1 text-white cursor-pointer hover:scale-105 transition-all duration-300"
             onClick={() => navigate("/add-shop-items")}
           />

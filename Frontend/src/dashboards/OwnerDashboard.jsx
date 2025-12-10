@@ -1,16 +1,27 @@
-import React from "react";
+import React, { useState } from "react";
 import Nav from "../components/Nav";
 import { useSelector } from "react-redux";
 import { FaUtensils } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { MdEdit } from "react-icons/md";
 import ShowFoodItems from "../components/ShowFoodItems";
+import { ClipLoader } from "react-spinners";
 
 const OwnerDashboard = () => {
   const { shopData } = useSelector((state) => state.owner);
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+
+  if (loading) {
+    return (
+      <div className="w-full min-h-screen flex items-center justify-center">
+        <ClipLoader size={35} color="black" />
+      </div>
+    );
+  }
+
   return (
-    <div className="w-full min-h-screen bg-[#fff9f6] flex flex-col items-center">
+    <div className="w-full pt-[68px] min-h-screen bg-[#fff9f6] flex flex-col items-center">
       <Nav />
 
       {/* when shop is not created than show */}
@@ -39,27 +50,14 @@ const OwnerDashboard = () => {
 
       {/* shop is already created than show */}
       {shopData && (
-        <div className="w-full flex flex-col items-center md:gap-2 gap-1">
-          {/* logo and heading */}
-          <div className="flex items-center justify-start gap-2">
-            <div
-              className="w-10 h-10 bg-[#ff4d2d] rounded-full border border-gray-300 cursor-pointer shadow-2xl duration-200 transition-all hover:scale-105
-            flex flex-col items-center justify-center"
-            >
-              <FaUtensils size={40} className=" p-2 rounded-full" />
-            </div>
-            <h2 className="md:text-xl text-[14px] font-semibold font-serif border-b-2">
-              WELCOME TO {shopData.name.toUpperCase()}
-            </h2>
-          </div>
-
+        <div className="w-full flex flex-col items-center md:gap-2 gap-1 mt-2 md:px-14 lg:px-32 xl:px-48 px-3">
           {/* shop image and details */}
           <div
-            className={`md:w-[60%] w-full bg-white rounded-xl shadow-2xl p-3.5 flex flex-col items-center justify-center gap-2`}
+            className={`w-full bg-white rounded-xl shadow-2xl p-3.5 flex flex-col items-center justify-center gap-2`}
             style={{ border: `1px solid bg-[#fff9f6]` }}
           >
             {/* restaurant banner image */}
-            <div className="w-full relative ">
+            <div className="w-full relative">
               <MdEdit
                 size={35}
                 className="bg-[#ff4d2d] rounded-full p-2 absolute top-3 right-3 text-white cursor-pointer hover:scale-105 transition-all duration-300"
@@ -72,6 +70,18 @@ const OwnerDashboard = () => {
                   className="object-fill md:h-[200px] h-[150px] w-full rounded-xl"
                 />
               </div>
+
+              {/* logo and heading
+              <div className="flex items-center justify-start gap-2 absolute bottom-0.5 md:left-[23%] left-4 bg-white rounded-md px-2.5 py-1">
+                <div
+                  className="w-10 h-10 md:block hidden bg-[#ff4d2d] rounded-full border border-gray-300 cursor-pointer shadow-2xl duration-200 transition-all hover:scale-105"
+                >
+                  <FaUtensils size={40} className=" p-2 rounded-full" />
+                </div>
+                <h2 className="md:text-xl text-[14px] font-semibold font-serif text-gray-700">
+                  WELCOME TO {shopData.name.toUpperCase()}
+                </h2>
+              </div> */}
             </div>
 
             {/* restaurant details */}
@@ -80,6 +90,7 @@ const OwnerDashboard = () => {
               <p className="text-sm text-gray-700">
                 Restaurant Owner : {shopData.owner.fullname}
               </p>
+
               <p className="text-sm text-gray-700">
                 Address : {shopData.address}
               </p>
@@ -114,7 +125,7 @@ const OwnerDashboard = () => {
 
       {/* if shop food items is available than show this div */}
       {shopData?.items.length > 0 && (
-        <div className="flex items-center md:flex-row flex-col justify-center md:gap-4 gap-2 w-full md:mt-4 mt-2 md:px-2 px-3">
+        <div className="w-full grid md:grid-cols-2 grid-cols-1 mt-2 gap-2 md:px-14 lg:px-32 xl:px-48 px-3">
           {shopData.items.map((item, idx) => (
             <ShowFoodItems key={idx} data={item} />
           ))}

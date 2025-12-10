@@ -108,14 +108,14 @@ const EditFoodItems = () => {
   return (
     <div className="relative min-h-screen flex flex-col items-center justify-center p-6 bg-gradient-br from-orange-50 to-white">
       <div
-        className="absolute top-4 left-4 text-[#ff4d2d] z-10 mb-2.5 cursor-pointer hover:scale-105 transition-all duration-200"
+        className="fixed md:top-4 md:left-4 top-1 left-1 text-[#ff4d2d] z-10 mb-2.5 cursor-pointer hover:scale-105 transition-all duration-200"
         onClick={() => navigate("/")}
       >
         <IoArrowBackCircleOutline size={35} />
       </div>
 
       <div
-        className={`bg-white rounded-xl shadow-lg w-full max-w-md md:p-8 p-4 flex flex-col items-center justify-center gap-4`}
+        className={`bg-white rounded-xl shadow-lg w-full max-w-[500px] md:p-8 p-4 flex flex-col items-center justify-center gap-4`}
         style={{ border: `1px solid bg-[#fff9f6]` }}
       >
         {/* logo and heading */}
@@ -126,7 +126,7 @@ const EditFoodItems = () => {
 
         {/* form for shop information */}
         <form
-          className="flex flex-col items-center gap-4"
+          className="flex flex-col items-center gap-4 w-full"
           onSubmit={handleSubmit}
         >
           {/* shop name */}
