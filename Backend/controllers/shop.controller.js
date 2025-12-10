@@ -45,7 +45,7 @@ export const CreateOrUpdateShop = async (req, res) => {
       );
     }
 
-    await shop.populate("owner");
+    await shop.populate("owner items");
 
     return res.status(201).json(shop);
   } catch (error) {
@@ -57,7 +57,7 @@ export const CreateOrUpdateShop = async (req, res) => {
 export const getCurrentShop = async (req, res) => {
   try {
     const shop = await ShopModel.findOne({ owner: req.userId }).populate(
-      "owner"
+      "owner items"
     );
     if (!shop) {
       return res.status(404).json({ message: `shop not found` });
