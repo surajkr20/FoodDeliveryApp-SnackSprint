@@ -182,20 +182,103 @@ Backend route:
 How it works:
 1. `App.jsx` calls `useGetMyShop()` (and other startup hooks) on app mount.
 2. `useGetMyShop` makes an authenticated request with credentials (`withCredentials: true`) to `/api/shop/get-shop`.
-3. On success the hook dispatches `setShopData(result.data)` into Redux.
+3. On success the hook dispatches `setShopData(result.data)` into Redux. The shop object includes an `items` array of populated item references.
 4. Components like `Nav.jsx` and `OwnerDashboard.jsx` read `shopData` via `useSelector(state => state.owner)` and render owner-specific UI (shop info, manage items links).
 
 Example (hook dispatch):
 
 ```js
 const result = await axios.get(`${serverUrl}/api/shop/get-shop`, { withCredentials: true });
-dispatch(setShopData(result.data));
+dispatch(setShopData(result.data)); // shop includes { name, image, items: [...], owner, ... }
 ```
 
 Notes and recommendations:
 - `Nav.jsx` already uses `shopData` to show owner-specific options when available.
 - `App.jsx` currently exports `serverUrl = "http://localhost:3000"`; for consistency consider moving to `import.meta.env.VITE_API_URL` and a `Frontend/.env` file.
 - Make sure `ownerSlice` is included in the store (`store.js`) so `useGetMyShop` can dispatch successfully.
+
+Owner item management — Add, Edit & Display
+
+After setting up a shop, owners can add menu items and manage them through dedicated pages. This feature demonstrates CRUD operations on related documents and a full-featured dashboard.
+
+Backend item endpoints
+- `POST /api/item/create-item` — Protected with `isAuth` middleware.
+  - Description: Add a new food item to the owner's shop.
+  - Body (FormData): `{ name, category, price, foodtype, image }` — `image` is required.
+  - Behavior: Multer accepts a single file, uploads to Cloudinary. Backend validates the owner has a shop, creates the item, pushes it to `shop.items[]`, and returns the populated shop object.
+  - Returns: `201` + updated shop with the new item in the `items` array.
+  - Errors: `404` if shop not found, `500` for server errors.
+
+- `POST /api/item/update-item/:itemId` — Protected with `isAuth` middleware.
+  - Description: Edit an existing menu item.
+  - URL params: `itemId` — the item's MongoDB ID.
+  - Body (FormData): `{ name, category, price, foodtype, image? }` — `image` is optional.
+  - Behavior: Validates the owner's shop, updates the item (including image if provided via Cloudinary), returns the updated shop with all items populated.
+  - Returns: `201` + updated shop.
+  - Errors: `400` if item not found, `500` for errors.
+
+- `GET /api/item/get-item/:itemId` — Public route (no auth required).
+  - Description: Fetch a single item's details.
+  - Returns: `200` + item object.
+
+Frontend item management pages
+
+- `Frontend/src/pages/AddFoodItems.jsx` — Form to create a new food item.
+  - Features: Inputs for item name, category (select from predefined list), food type (`veg`/`non veg`), price, image.
+  - Client-side image preview using `URL.createObjectURL`.
+  - Submits as `FormData` to `POST /api/item/create-item` with credentials.
+  - On success dispatches `setShopData(result.data)` and navigates home.
+  - Shows loader state during submission.
+
+- `Frontend/src/pages/EditFoodItems.jsx` — Form to edit an existing food item.
+  - Fetches the current item from the shop via `itemId` URL param.
+  - Pre-fills all fields (name, category, type, price, image).
+  - Image is optional on edit — only uploads if user selects a new file.
+  - Submits to `POST /api/item/update-item/:itemId`.
+  - Dispatches updated shop data and navigates home.
+
+Owner dashboard & item display
+
+- `Frontend/src/dashboards/OwnerDashboard.jsx` — Main owner view showing shop status and items.
+  - If `shopData` is null: displays a card prompting owner to create a shop with "Get Started" button linking to `/create-edit-shop`.
+  - If `shopData` exists but has no items: displays a card prompting to add items with "Add Food" button linking to `/add-shop-items`.
+  - If `shopData` exists with items: displays the shop banner (image with edit button), shop details (name, owner, address), and a grid of items via the `ShowFoodItems` component.
+  - Edit shop link in the top-right of the shop banner for quick access to `CreateEditShop`.
+
+- `Frontend/src/components/ShowFoodItems.jsx` — Item card component displayed on the owner dashboard.
+  - Shows item image, name, category, food type, and price.
+  - Includes Edit button (green) that navigates to `/edit-shop-items/{itemId}`.
+  - Includes Delete button (red) — currently navigates to add items page (placeholder for delete logic).
+  - Used in a grid layout on `OwnerDashboard` when items exist.
+
+Routes and guards
+
+The following routes are added to `App.jsx`:
+- `/create-edit-shop` — Redirects to signin if `userData` is not set.
+- `/add-shop-items` — Requires both `userData` and `shopData` to exist (owner must create shop first).
+- `/edit-shop-items/:itemId` — Requires `userData`, `shopData`, and at least one item in the shop.
+
+UX highlights
+- Progressive disclosure: users must complete setup steps in order (signup → create shop → add items).
+- Loader states on all form submissions (AddFoodItems, EditFoodItems, CreateEditShop) for clear feedback.
+- Image previews before upload so owners see what they're adding.
+- Quick edit links from the dashboard to manage items without leaving the view.
+
+Data flow summary
+1. Owner signs up / signs in → `useGetCurrentUser` fetches user, `useGetMyShop` fetches shop.
+2. Owner navigates to `/create-edit-shop` → creates or edits shop via `CreateEditShop` page.
+3. Dashboard shows shop created → "Add Food" button is now available.
+4. Owner clicks "Add Food" → `/add-shop-items` page with form.
+5. On submit → `POST /api/item/create-item` → backend adds item to shop and updates Redux via `setShopData`.
+6. Dashboard refreshes and shows the new item in the items grid.
+7. Owner can click edit icon on any item → `/edit-shop-items/{itemId}` → fetch item details, edit form, submit to `POST /api/item/update-item/:itemId}`.
+8. Dashboard updates after successful edit.
+
+What I added to the README
+- Detailed item management endpoints and behaviors.
+- Frontend page descriptions (AddFoodItems, EditFoodItems, OwnerDashboard, ShowFoodItems).
+- Route guards and UX flow.
+- Data flow summary showing the complete owner journey from shop creation to item management.
 
 Create / Edit Shop page & location hook
 

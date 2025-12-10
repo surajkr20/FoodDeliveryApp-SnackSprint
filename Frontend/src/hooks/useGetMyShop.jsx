@@ -2,7 +2,7 @@ import axios from "axios";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { serverUrl } from "../App";
-import {setShopData} from "../redux/ownerSlice.js";
+import { setShopData } from "../redux/ownerSlice.js";
 
 function useGetMyShop() {
   const dispatch = useDispatch();
@@ -13,7 +13,7 @@ function useGetMyShop() {
           withCredentials: true,
         });
         console.log("shopData", result);
-        dispatch(setShopData(result.data))
+        dispatch(setShopData(result.data));
       } catch (error) {
         console.log("getting error in current shop: ", error);
       }

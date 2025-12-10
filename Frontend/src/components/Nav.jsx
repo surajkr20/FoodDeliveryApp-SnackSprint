@@ -9,6 +9,7 @@ import { serverUrl } from "../App";
 import { setUserData } from "../redux/userSlice";
 import { FiPlusCircle } from "react-icons/fi";
 import { BsCartPlus } from "react-icons/bs";
+import { useNavigate } from "react-router-dom";
 
 const Nav = () => {
   const { userData, city, country } = useSelector((state) => state.user);
@@ -16,6 +17,7 @@ const Nav = () => {
   const [showInfo, setShowInfo] = useState(false);
   const [showSearchInput, setShowSearchInput] = useState(false);
   const dispatch = useDispatch(); 
+  const navigate = useNavigate();
 
   const handleSignOut = async () => {
     try {
@@ -152,7 +154,7 @@ const Nav = () => {
 
     case "owner":
       return (
-        <div className="w-full h-20 flex items-center justify-between md:justify-evenly gap-[30px] px-5 fixed top-0 z-9999 bg-[#fff9f6] overflow-visible">
+        <div className="w-full h-20 flex items-center justify-between md:justify-evenly gap-[30px] px-5 bg-[#fff9f6] overflow-visible">
           <h1 className="md:text-3xl text-2xl font-bold mb-2 text-[#ff4d2d]">
             SnackSprint
           </h1>
@@ -160,7 +162,11 @@ const Nav = () => {
           <div className=" flex items-center gap-2 md:gap-4">
             {/* Add food button */}
             {shopData && (
-              <button className="rounded-full md:rounded-xl bg-[#ff4d2d]/10 text-[#ff4d2d] items-center justify-between md:px-3 md:py-1 p-2 flex gap-1 font-medium cursor-pointer">
+              <button 
+              onClick={()=>{
+                navigate("/add-shop-items")
+              }}
+               className="rounded-full md:rounded-xl bg-[#ff4d2d]/10 text-[#ff4d2d] items-center justify-between md:px-3 md:py-1 p-2 flex gap-1 font-medium cursor-pointer">
               <FiPlusCircle size={20} />
               <span className="hidden md:block">
                 Add Food Items

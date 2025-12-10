@@ -24,7 +24,7 @@ app.use(
 app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
 app.use("/api/shop", shopRouter);
-app.use("api/item", ItemsRouter);
+app.use("/api/item", ItemsRouter);
 
 app.listen(port, () => {
   dbConnect();
