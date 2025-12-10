@@ -50,6 +50,7 @@ const CreateEditShop = () => {
       dispatch(setShopData(result.data))
       console.log(result);
       setLoading(false);
+      navigate('/')
 
       // reset form
       setName("");
