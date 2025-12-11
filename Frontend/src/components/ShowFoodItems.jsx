@@ -1,13 +1,31 @@
 import React from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { MdEdit } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { FaRupeeSign } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
+import axios from "axios";
+import {serverUrl} from "../App";
+import { setShopData } from "../redux/ownerSlice";
+import {toast} from "react-toastify"
 
 const ShowFoodItems = ({ data }) => {
   const { shopData } = useSelector((state) => state.owner);
   const navigate = useNavigate();
+  const dispatch = useDispatch()
+
+  const handleDelete = async ()=>{
+    try {
+      const result = await axios.get(`${serverUrl}/api/item/delete-item/${data._id}`, {
+        withCredentials: true
+      })
+      dispatch(setShopData(result.data));
+      toast("Food-Item deleted successfull.")
+      console.log("result",result);
+    } catch (error) {
+      console.log("delete food item error", error)
+    }
+  }
 
   return (
     <div
@@ -36,7 +54,7 @@ const ShowFoodItems = ({ data }) => {
           <MdDelete
             size={25}
             className="bg-[#ff4d2d] rounded-full p-1 text-white cursor-pointer hover:scale-105 transition-all duration-300"
-            onClick={() => navigate("/add-shop-items")}
+            onClick={handleDelete}
           />
         </div>
 

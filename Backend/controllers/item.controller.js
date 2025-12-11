@@ -58,7 +58,9 @@ export const EditItems = async (req, res) => {
     if (!item) {
       return res.status(400).json({ message: `item not found` });
     }
-    const shop = await ShopModel.findOne({owner: req.userId}).populate("items")
+    const shop = await ShopModel.findOne({ owner: req.userId }).populate(
+      "items"
+    );
     return res.status(201).json(shop);
   } catch (error) {
     console.log("Item Edit Error:", error);
@@ -81,5 +83,30 @@ export const getItems = async (req, res) => {
     return res
       .status(500)
       .json({ message: `getting current items error`, error });
+  }
+};
+
+export const DeleteItem = async (req, res) => {
+  try {
+    const itemId = req.params.itemId;
+    if (!itemId) {
+      return res.status(400).json({ message: `itemId not found` });
+    }
+    const item = await ItemsModel.findByIdAndDelete(itemId);
+    if (!item) {
+      return res.status(400).json({ message: `items not found` });
+    }
+    const shop = await ShopModel.findOne({ owner: req.userId });
+    shop.items = shop.items.filter((i) => i !== item._id);
+    await shop.save();
+    await shop.populate({
+      path: "items",
+      options: { sort: { updatedAt: -1 } },
+    });
+    return res.status(200).json(shop);
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: `error in the deleting food items`, error });
   }
 };
