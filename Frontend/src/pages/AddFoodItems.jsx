@@ -7,6 +7,7 @@ import { setShopData } from "../redux/ownerSlice";
 import { FaUtensils } from "react-icons/fa";
 import axios from "axios";
 import { serverUrl } from "../App";
+import { toast } from "react-toastify";
 
 const AddFoodItems = () => {
   const { shopData } = useSelector((state) => state.owner);
@@ -62,9 +63,10 @@ const AddFoodItems = () => {
         }
       );
       dispatch(setShopData(result.data));
-      console.log(result);
-      navigate("/");
+      toast("Your Food-item Added sucessfully..")
       setLoading(false);
+      navigate("/");
+      console.log(result);
     } catch (error) {
       setLoading(false);
       console.log("handleSubmit in the foodItems error".error);

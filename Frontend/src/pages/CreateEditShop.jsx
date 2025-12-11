@@ -48,17 +48,10 @@ const CreateEditShop = () => {
         }
       );
       dispatch(setShopData(result.data));
-      console.log(result);
+      toast("Shop Created sucessfully..")
       setLoading(false);
       navigate("/");
-
-      // reset form
-      setName("");
-      setCity("");
-      setState("");
-      setAddress("");
-      setFrontendImage(null);
-      setBackendImage(null);
+      console.log(result);
     } catch (error) {
       console.log(`handle submit error`, error);
       setLoading(false);

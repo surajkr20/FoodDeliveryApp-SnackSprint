@@ -10,6 +10,7 @@ import { FaRegArrowAltCircleRight } from "react-icons/fa";
 import { serverUrl } from "../App";
 import axios from "axios";
 import {ClipLoader} from "react-spinners"
+import { toast } from "react-toastify";
 
 const ForgetPassword = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -32,9 +33,10 @@ const ForgetPassword = () => {
           withCredentials: true,
         }
       );
+      setLoading(false);
+      toast("otp sent successfull, check your email!")
       setStep(2);
       console.log(result);
-      setLoading(false);
       setErr("");
     } catch (error) {
       console.log("handleSendOtp error : ", error);
@@ -54,6 +56,7 @@ const ForgetPassword = () => {
         }
       );
       setStep(3);
+      toast("otp verified successfully..")
       console.log(result);
       setLoading(false)
       setErr("");
@@ -79,6 +82,7 @@ const ForgetPassword = () => {
         }
       );
       navigate("/signin");
+      toast("password updated successfully..")
       console.log(result);
       setLoading(false);
       setErr("");

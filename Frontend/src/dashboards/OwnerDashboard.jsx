@@ -85,11 +85,14 @@ const OwnerDashboard = () => {
             </div>
 
             {/* restaurant details */}
-            <div className="w-full flex md:flex-row flex-col items-center font-serif justify-around md:gap-1">
-              {/* <h2 className="md:block hidden text-2xl md:text-3xl font-semibold text-[#ff4d2d] font-serif">{shopData.name}</h2> */}
+            <div className="w-full flex md:flex-row flex-col items-center font-serif justify-evenly md:gap-1">
               <p className="text-sm text-gray-700">
                 Restaurant Owner : {shopData.owner.fullname}
               </p>
+
+              <h2 className="text-sm md:text-xl font-semibold font-serif text-gray-700">
+                WELCOME TO {shopData.name.toUpperCase()}
+              </h2>
 
               <p className="text-sm text-gray-700">
                 Address : {shopData.address}
@@ -125,7 +128,7 @@ const OwnerDashboard = () => {
 
       {/* if shop food items is available than show this div */}
       {shopData?.items.length > 0 && (
-        <div className="w-full grid md:grid-cols-2 grid-cols-1 mt-2 gap-2 md:px-14 lg:px-32 xl:px-48 px-3">
+        <div className="w-full grid md:grid-cols-2 grid-cols-1 mt-2 gap-2 md:px-14 lg:px-32 xl:px-48 px-3 mb-4">
           {shopData.items.map((item, idx) => (
             <ShowFoodItems key={idx} data={item} />
           ))}

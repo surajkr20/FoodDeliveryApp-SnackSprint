@@ -88,9 +88,10 @@ const EditFoodItems = () => {
         }
       );
       dispatch(setShopData(result.data));
-      console.log(result);
       navigate("/");
       setLoading(false);
+      toast("Your Food-item Updated sucessfully..")
+      console.log(result);
     } catch (error) {
       setLoading(false);
       console.log("handleSubmit in the foodItems error".error);
