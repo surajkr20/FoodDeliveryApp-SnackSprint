@@ -10,6 +10,7 @@ import { auth } from "../../firebase.js";
 import { ClipLoader } from "react-spinners";
 import { useDispatch } from "react-redux";
 import { setUserData } from "../redux/userSlice.js";
+import { toast } from "react-toastify";
 
 const SignUp = () => {
   const primaryColor = "#ff4d2d";
@@ -42,6 +43,7 @@ const SignUp = () => {
       dispatch(setUserData(result.data))
       setErr("");
       setLoading(false);
+      toast(`${role} account created successfully..`)
       // reset input fields
       setFullname("");
       setEmail("");
@@ -74,6 +76,7 @@ const SignUp = () => {
         { withCredentials: true }
       );
       dispatch(setUserData(data))
+      toast(`${role} account created successfully..`)
       setLoading(false);
       setErr("");
     } catch (error) {

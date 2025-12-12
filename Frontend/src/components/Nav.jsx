@@ -11,6 +11,7 @@ import { FiPlusCircle } from "react-icons/fi";
 import { BsCartPlus } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
 import { ClipLoader } from "react-spinners";
+import { toast } from "react-toastify";
 
 const Nav = () => {
   const { userData, city, country } = useSelector((state) => state.user);
@@ -27,6 +28,7 @@ const Nav = () => {
         withCredentials: true,
       });
       dispatch(setUserData(null));
+      toast("logout successfully")
       console.log("logout successfully");
     } catch (error) {
       console.log(`signout error: ${error}`);
@@ -119,7 +121,7 @@ const Nav = () => {
                 setShowSearchInput(false);
               }}
             >
-              {userData?.fullname.slice(0, 1)}
+              {userData?.fullname.slice(0, 1).toUpperCase()}
             </div>
 
             {/* Profile popup */}
@@ -127,7 +129,7 @@ const Nav = () => {
               <div className="fixed w-[200px] md:w-auto top-20 right-4 md:right-[10%] lg:right-[18%] bg-white shadow-2xl rounded-xl px-4 py-4 flex flex-col items-start z-9999 gap-2">
                 <div className="flex flex-col gap-1">
                   <span className="text-[14px] text-gray-800 font-semibold truncate">
-                    {userData.fullname}
+                    {userData.fullname.toUpperCase()}
                   </span>
                   <span className="text-[14px] text-gray-800 font-semibold truncate">
                     {userData.email}
